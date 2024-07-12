@@ -1,4 +1,3 @@
-
 from graph import Graph
 
 def main():
@@ -12,15 +11,17 @@ def main():
     user4 = social_network.add_user(4, "David")
     user5 = social_network.add_user(5, "Eve")
 
-    # Add friendships
+    # Add friendships with weights
     if user1 and user2:
-        user1.add_friend(user2)
+        user1.add_friend(user2, 1)
     if user2 and user3:
-        user2.add_friend(user3)
+        user2.add_friend(user3, 1)
     if user3 and user4:
-        user3.add_friend(user4)
+        user3.add_friend(user4, 1)
     if user4 and user5:
-        user4.add_friend(user5)
+        user4.add_friend(user5, 1)
+    if user1 and user5:
+        user1.add_friend(user5, 10)
 
     # Display users and their friends
     for user_id, user in social_network.users.items():
@@ -29,6 +30,9 @@ def main():
     # Test BFS and DFS
     print("BFS from Alice:", social_network.bfs(1))
     print("DFS from Alice:", social_network.dfs(1))
+
+    # Test Dijkstra's algorithm
+    print("Shortest path from Alice to Eve:", social_network.dijkstra(1, 5))
 
     # Remove a user
     social_network.remove_user(2)

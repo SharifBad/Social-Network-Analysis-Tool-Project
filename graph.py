@@ -1,7 +1,6 @@
-# graph.py
-
 from user import User
 from collections import deque
+import heapq
 
 class Graph:
     def __init__(self):
@@ -20,7 +19,7 @@ class Graph:
         if user_id in self.users:
             user = self.users.pop(user_id)
             for friend in user.friends:
-                friend.friends.remove(user)
+                del friend.friends[user]
         else:
             print(f"User with ID {user_id} does not exist.")
 
@@ -66,3 +65,40 @@ class Graph:
                         stack.append(friend)
 
         return result
+
+    def dijkstra(self, start_user_id, target_user_id):
+        if start_user_id not in self.users or target_user_id not in self.users:
+            print("One or both users do not exist.")
+            return []
+
+        start_user = self.users[start_user_id]
+        target_user = self.users[target_user_id]
+
+        distances = {user: float('infinity') for user in self.users.values()}
+        previous_users = {user: None for user in self.users.values()}
+        distances[start_user] = 0
+        priority_queue = [(0, start_user)]
+
+        while priority_queue:
+            current_distance, current_user = heapq.heappop(priority_queue)
+
+            if current_distance > distances[current_user]:
+                continue
+
+            for neighbor, weight in current_user.friends.items():
+                distance = current_distance + weight
+
+                if distance < distances[neighbor]:
+                    distances[neighbor] = distance
+                    previous_users[neighbor] = current_user
+                    heapq.heappush(priority_queue, (distance, neighbor))
+
+        path = []
+        current_user = target_user
+        while previous_users[current_user] is not None:
+            path.append(current_user.user_id)
+            current_user = previous_users[current_user]
+        path.append(start_user.user_id)
+        path.reverse()
+
+        return path
